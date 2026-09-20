@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* ============================================================
+   MoneySplit Design System
+   ============================================================ */
+
+@theme {
+  /* Color palette — premium dark indigo aesthetic */
+  --color-ms-bg-primary: #020617; /* slate-950 */
+  --color-ms-bg-secondary: #0f172a; /* slate-900 */
+  --color-ms-bg-card: #0f172a;
+  --color-ms-bg-card-hover: #1e293b; /* slate-800 */
+  --color-ms-bg-input: #0f172a;
+  --color-ms-bg-input-focus: #1e293b;
+
+  --color-ms-border: #1e293b;
+  --color-ms-border-focus: #6366f1; /* indigo-500 */
+  --color-ms-border-error: #f43f5e; /* rose-500 */
+  --color-ms-border-success: #10b981; /* emerald-500 */
+
+  --color-ms-text-primary: #f8fafc; /* slate-50 */
+  --color-ms-text-secondary: #94a3b8; /* slate-400 */
+  --color-ms-text-muted: #64748b; /* slate-500 */
+  --color-ms-text-inverse: #ffffff;
+
+  --color-ms-accent: #6366f1; /* indigo-500 */
+  --color-ms-accent-hover: #4f46e5; /* indigo-600 */
+  --color-ms-accent-light: #22d3ee; /* cyan-400 */
+  --color-ms-accent-muted: rgba(99, 102, 241, 0.15);
+
+  --color-ms-positive: #10b981; /* emerald-500 */
+  --color-ms-positive-light: #34d399; /* emerald-400 */
+  --color-ms-positive-muted: rgba(16, 185, 129, 0.15);
+
+  --color-ms-negative: #f43f5e; /* rose-500 */
+  --color-ms-negative-light: #fb7185; /* rose-400 */
+  --color-ms-negative-muted: rgba(244, 63, 94, 0.15);
+
+  --color-ms-warning: #f59e0b; /* amber-500 */
+  --color-ms-warning-muted: rgba(245, 158, 11, 0.15);
+
+  /* Shadows */
+  --shadow-ms-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-ms-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-ms-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-ms-glow: 0 0 24px rgba(99, 102, 241, 0.25);
+
+  /* Radius */
+  --radius-ms-sm: 8px;
+  --radius-ms-md: 12px;
+  --radius-ms-lg: 20px;
+  --radius-ms-xl: 28px;
+  --radius-ms-full: 9999px;
+
+  /* Animations */
+  --ease-ms-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ms-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-ms-fast: 150ms;
+  --duration-ms-normal: 250ms;
+  --duration-ms-slow: 400ms;
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-ms-bg-primary);
+  background-image: radial-gradient(circle at top, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+  color: var(--color-ms-text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   Scrollbar styling
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ms-border);
+  border-radius: var(--radius-ms-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ms-text-muted);
+}
+
+/* ============================================================
+   Focus styles
+   ============================================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-ms-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-ms-sm);
+}
+
+/* ============================================================
+   Selection
+   ============================================================ */
+
+::selection {
+  background-color: var(--color-ms-accent-muted);
+  color: var(--color-ms-accent-light);
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+@keyframes ms-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ms-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ms-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+  }
+}
+
+@keyframes ms-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ms-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes ms-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes ms-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ============================================================
+   Utility classes
+   ============================================================ */
+
+.ms-animate-fade-in {
+  animation: ms-fade-in var(--duration-ms-normal) var(--ease-ms-spring) forwards;
+}
+
+.ms-animate-slide-up {
+  animation: ms-slide-up var(--duration-ms-slow) var(--ease-ms-spring) forwards;
+}
+
+.ms-animate-float {
+  animation: ms-float 3s ease-in-out infinite;
+}
+
+.ms-animate-gradient {
+  background-size: 200% auto;
+  animation: ms-gradient-shift 3s ease infinite;
+}
+
+.ms-glass {
+  background: rgba(15, 23, 42, 0.65); /* slate-900 with opacity */
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(99, 102, 241, 0.1); /* subtle indigo border */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.ms-glass-strong {
+  background: rgba(2, 6, 23, 0.85); /* slate-950 with opacity */
+  backdrop-filter: blur(32px) saturate(2);
+  -webkit-backdrop-filter: blur(32px) saturate(2);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Staggered animation delays for lists */
+.ms-stagger > :nth-child(1) { animation-delay: 0ms; }
+.ms-stagger > :nth-child(2) { animation-delay: 60ms; }
+.ms-stagger > :nth-child(3) { animation-delay: 120ms; }
+.ms-stagger > :nth-child(4) { animation-delay: 180ms; }
+.ms-stagger > :nth-child(5) { animation-delay: 240ms; }
+.ms-stagger > :nth-child(6) { animation-delay: 300ms; }

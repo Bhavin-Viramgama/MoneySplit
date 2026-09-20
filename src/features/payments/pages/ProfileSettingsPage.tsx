@@ -138,181 +138,183 @@ export function ProfileSettingsPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto w-full p-4 md:p-8 space-y-8 pb-12">
-      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-slate-400 hover:text-white">
-          <ChevronLeft className="h-5 w-5" />
-          {/* <span className="hidden sm:inline ml-1 font-medium">Back</span> */}
-        </Button>
-        <Settings className="h-6 w-6 text-slate-400" />
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Settings</h1>
-      </div>
-
-      {/* Profile Settings */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium text-slate-200">Profile</h2>
-        
-        <form onSubmit={handleUpdateProfile} className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl space-y-4">
-          <div className="space-y-4 max-w-sm">
-            <Input 
-              label="Display Name" 
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              placeholder="Your Name"
-              required
-            />
-            <Input 
-              label="Username" 
-              value={editUsername}
-              onChange={(e) => setEditUsername(e.target.value)}
-              placeholder="username"
-              required
-            />
-            <Button type="submit" loading={savingProfile} disabled={savingProfile}>
-              Save Profile
-            </Button>
-          </div>
-        </form>
-      </section>
-
-      {/* Account Settings */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium text-slate-200">Account</h2>
-
-        <div className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-white">Require Settlement Approval</h3>
-              <p className="text-sm text-slate-500 mt-1 max-w-md">
-                When friends record that they paid you back, it will require your approval before updating the balance.
-              </p>
-            </div>
-
-            {/* Simple toggle switch */}
-            <button
-              onClick={handleToggleApproval}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${requireApproval ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
-                }`}
-            >
-              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${requireApproval ? 'translate-x-6' : 'translate-x-1'
-                }`} />
-            </button>
-          </div>
-
-          <hr className="border-white/5 my-4" />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-white">Auto-Accept Invites</h3>
-              <p className="text-sm text-slate-500 mt-1 max-w-md">
-                Automatically accept incoming friend and group invites. If disabled, you'll need to manually approve them.
-              </p>
-            </div>
-
-            <button
-              onClick={handleToggleAutoAccept}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${autoAcceptRequests ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
-                }`}
-            >
-              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoAcceptRequests ? 'translate-x-6' : 'translate-x-1'
-                }`} />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Payment Methods */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-slate-200">Payment Methods</h2>
-          {!showAddForm && (
-            <Button size="sm" onClick={() => setShowAddForm(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Method
-            </Button>
-          )}
+  return (
+    <div className="flex-1 overflow-y-auto w-full h-full">
+      <div className="max-w-3xl mx-auto w-full p-4 md:p-8 space-y-8 pb-12">
+        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-slate-400 hover:text-white">
+            <ChevronLeft className="h-5 w-5" />
+            {/* <span className="hidden sm:inline ml-1 font-medium">Back</span> */}
+          </Button>
+          <Settings className="h-6 w-6 text-slate-400" />
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Settings</h1>
         </div>
 
-        {showAddForm && (
-          <form onSubmit={handleAddMethod} className="rounded-3xl border border-white/5 bg-white/5 p-6 space-y-5 backdrop-blur-xl shadow-xl">
-            <h3 className="font-medium text-white">Add New Payment Method</h3>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-2">Type</label>
-              <select
-                value={newType}
-                onChange={(e) => setNewType(e.target.value as any)}
-                className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="upi">UPI ID</option>
-                <option value="bank_transfer" disabled>Bank Transfer (Coming Soon)</option>
-              </select>
-            </div>
-
-            {newType === 'upi' && (
-              <div className="space-y-3">
-                <Input
-                  label="UPI ID"
-                  placeholder="username@bank"
-                  value={newUpiId}
-                  onChange={(e) => setNewUpiId(e.target.value)}
-                  required
-                />
-                <Input
-                  label="Payee Name (Optional)"
-                  placeholder="Exact name registered with bank"
-                  value={newPayeeName}
-                  onChange={(e) => setNewPayeeName(e.target.value)}
-                />
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3 mt-4">
-              <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)}>Cancel</Button>
-              <Button type="submit" loading={adding} disabled={adding || !newUpiId}>Save</Button>
+        {/* Profile Settings */}
+        <section className="space-y-4">
+          <h2 className="text-lg font-medium text-slate-200">Profile</h2>
+          
+          <form onSubmit={handleUpdateProfile} className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl space-y-4">
+            <div className="space-y-4 max-w-sm">
+              <Input 
+                label="Display Name" 
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Your Name"
+                required
+              />
+              <Input 
+                label="Username" 
+                value={editUsername}
+                onChange={(e) => setEditUsername(e.target.value)}
+                placeholder="username"
+                required
+              />
+              <Button type="submit" loading={savingProfile} disabled={savingProfile}>
+                Save Profile
+              </Button>
             </div>
           </form>
-        )}
+        </section>
 
-        {methods.length === 0 && !showAddForm ? (
-          <div className="rounded-3xl border border-white/10 border-dashed bg-white/5 p-8 text-center backdrop-blur-xl">
-            <CreditCard className="mx-auto h-8 w-8 text-slate-600 mb-3" />
-            <p className="text-slate-500">No payment methods added yet.</p>
-          </div>
-        ) : (
-          <div className="grid gap-3">
-            {methods.map(method => (
-              <div key={method.id} className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-5 backdrop-blur-md">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-ms-accent)]/10 text-[var(--color-ms-accent)] border border-[var(--color-ms-accent)]/20">
-                    <QrCode className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-slate-200 capitalize">{method.type}</h3>
-                    <p className="text-sm text-slate-500">{method.details?.upi_id}</p>
-                    {method.details?.payee_name && (
-                      <p className="text-xs text-slate-600 mt-0.5">Payee: {method.details?.payee_name}</p>
-                    )}
-                  </div>
-                </div>
+        {/* Account Settings */}
+        <section className="space-y-4">
+          <h2 className="text-lg font-medium text-slate-200">Account</h2>
 
-                <div className="flex items-center gap-4">
-                  {method.is_default && (
-                    <span className="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded">Default</span>
-                  )}
-                  <button
-                    onClick={() => handleDeleteMethod(method.id)}
-                    className="p-2 text-slate-500 hover:text-rose-500 rounded-full hover:bg-slate-800 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+          <div className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-white">Require Settlement Approval</h3>
+                <p className="text-sm text-slate-500 mt-1 max-w-md">
+                  When friends record that they paid you back, it will require your approval before updating the balance.
+                </p>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
 
+              {/* Simple toggle switch */}
+              <button
+                onClick={handleToggleApproval}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${requireApproval ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
+                  }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${requireApproval ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+              </button>
+            </div>
+
+            <hr className="border-white/5 my-4" />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-white">Auto-Accept Invites</h3>
+                <p className="text-sm text-slate-500 mt-1 max-w-md">
+                  Automatically accept incoming friend and group invites. If disabled, you'll need to manually approve them.
+                </p>
+              </div>
+
+              <button
+                onClick={handleToggleAutoAccept}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${autoAcceptRequests ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
+                  }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoAcceptRequests ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Payment Methods */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium text-slate-200">Payment Methods</h2>
+            {!showAddForm && (
+              <Button size="sm" onClick={() => setShowAddForm(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Method
+              </Button>
+            )}
+          </div>
+
+          {showAddForm && (
+            <form onSubmit={handleAddMethod} className="rounded-3xl border border-white/5 bg-white/5 p-6 space-y-5 backdrop-blur-xl shadow-xl">
+              <h3 className="font-medium text-white">Add New Payment Method</h3>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-2">Type</label>
+                <select
+                  value={newType}
+                  onChange={(e) => setNewType(e.target.value as any)}
+                  className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="upi">UPI ID</option>
+                  <option value="bank_transfer" disabled>Bank Transfer (Coming Soon)</option>
+                </select>
+              </div>
+
+              {newType === 'upi' && (
+                <div className="space-y-3">
+                  <Input
+                    label="UPI ID"
+                    placeholder="username@bank"
+                    value={newUpiId}
+                    onChange={(e) => setNewUpiId(e.target.value)}
+                    required
+                  />
+                  <Input
+                    label="Payee Name (Optional)"
+                    placeholder="Exact name registered with bank"
+                    value={newPayeeName}
+                    onChange={(e) => setNewPayeeName(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 mt-4">
+                <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)}>Cancel</Button>
+                <Button type="submit" loading={adding} disabled={adding || !newUpiId}>Save</Button>
+              </div>
+            </form>
+          )}
+
+          {methods.length === 0 && !showAddForm ? (
+            <div className="rounded-3xl border border-white/10 border-dashed bg-white/5 p-8 text-center backdrop-blur-xl">
+              <CreditCard className="mx-auto h-8 w-8 text-slate-600 mb-3" />
+              <p className="text-slate-500">No payment methods added yet.</p>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {methods.map(method => (
+                <div key={method.id} className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-5 backdrop-blur-md">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-ms-accent)]/10 text-[var(--color-ms-accent)] border border-[var(--color-ms-accent)]/20">
+                      <QrCode className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-slate-200 capitalize">{method.type}</h3>
+                      <p className="text-sm text-slate-500">{method.details?.upi_id}</p>
+                      {method.details?.payee_name && (
+                        <p className="text-xs text-slate-600 mt-0.5">Payee: {method.details?.payee_name}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    {method.is_default && (
+                      <span className="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded">Default</span>
+                    )}
+                    <button
+                      onClick={() => handleDeleteMethod(method.id)}
+                      className="p-2 text-slate-500 hover:text-rose-500 rounded-full hover:bg-slate-800 transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

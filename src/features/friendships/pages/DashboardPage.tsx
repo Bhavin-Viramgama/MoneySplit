@@ -13,6 +13,8 @@ import { formatCurrency } from '@/lib/utils';
 import { groupsService } from '@/features/groups/services/groups.service';
 import { supabase } from '@/lib/supabase';
 import type { Group } from '@/types';
+import { paymentsService } from '@/features/payments/services/payments.service';
+import { UpiPromptModal } from '@/features/payments/components/UpiPromptModal';
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -22,6 +24,28 @@ export function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'friends' | 'groups' | 'requests'>('friends');
+  const [isUpiPromptOpen, setIsUpiPromptOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const hasDismissed = localStorage.getItem(`ms_upi_prompt_${user.id}`);
+      if (!hasDismissed) {
+        paymentsService.getUserPaymentMethods(user.id)
+          .then(methods => {
+            const hasUpi = methods.some(m => m.type === 'upi');
+            if (!hasUpi) {
+              setIsUpiPromptOpen(true);
+            }
+          })
+          .catch(console.error);
+      }
+    }
+  }, [user]);
+
+  const handleCloseUpiPrompt = () => {
+    localStorage.setItem(`ms_upi_prompt_${user?.id}`, 'true');
+    setIsUpiPromptOpen(false);
+  };
 
   useEffect(() => {
     if (user) {
@@ -150,7 +174,7 @@ export function DashboardPage() {
     <div className="flex-1 overflow-y-auto w-full h-full">
       <div className="max-w-4xl mx-auto w-full p-4 md:p-8 space-y-8 pb-24">
         {/* Overview Cards */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4">
           <div className="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-xl relative overflow-hidden backdrop-blur-xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-ms-accent)]/20 rounded-full blur-[50px] pointer-events-none" />
             <div className="flex items-center gap-3 text-slate-400">
@@ -166,50 +190,27 @@ export function DashboardPage() {
               {totalBalance > 0 ? 'You are owed' : totalBalance < 0 ? 'You owe' : 'All settled up'}
             </p>
           </div>
-
-          <div className="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-xl flex flex-col justify-between backdrop-blur-xl">
-            <div>
-              <div className="flex items-center gap-3 text-slate-400">
-                <Users className="h-5 w-5" />
-                <h3 className="font-medium">Friends</h3>
-              </div>
-              <div className="mt-4 text-5xl font-bold tracking-tighter text-white">
-                {activeFriendships.length}
-              </div>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Button onClick={() => setIsModalOpen(true)} className="gap-2">
-                <UserPlus className="h-4 w-4" />
-                Add Friend
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-4 border-b border-white/10 pb-4">
+        <div className="flex items-center gap-4 border-b border-white/10 pb-4 overflow-x-auto whitespace-nowrap">
           <button
             onClick={() => setActiveTab('friends')}
             className={`text-lg font-semibold transition-colors ${activeTab === 'friends' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
-            Friends
+            Friends ({activeFriendships.length})
           </button>
           <button
             onClick={() => setActiveTab('groups')}
             className={`text-lg font-semibold transition-colors ${activeTab === 'groups' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
-            Groups
+            Groups ({activeGroups.length})
           </button>
           <button
             onClick={() => setActiveTab('requests')}
             className={`text-lg font-semibold transition-colors flex items-center gap-2 ${activeTab === 'requests' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
-            Requests
-            {totalRequests > 0 && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
-                {totalRequests}
-              </span>
-            )}
+            Requests ({totalRequests})
           </button>
         </div>
 
@@ -217,6 +218,12 @@ export function DashboardPage() {
         <div>
           {activeTab === 'friends' && (
             <>
+              <div className="flex justify-end mb-4">
+                <Button onClick={() => setIsModalOpen(true)} variant="secondary" size="sm">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add Friend
+                </Button>
+              </div>
               {activeFriendships.length === 0 ? (
                 <div className="rounded-3xl border border-white/10 border-dashed bg-white/5 p-12 text-center backdrop-blur-xl">
                   <Users className="mx-auto h-12 w-12 text-slate-600 mb-4" />
@@ -387,6 +394,10 @@ export function DashboardPage() {
         <CreateGroupModal
           isOpen={isGroupModalOpen}
           onClose={() => setIsGroupModalOpen(false)}
+        />
+        <UpiPromptModal
+          isOpen={isUpiPromptOpen}
+          onClose={handleCloseUpiPrompt}
         />
       </div>
     </div>

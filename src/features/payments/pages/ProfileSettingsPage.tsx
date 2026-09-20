@@ -138,7 +138,6 @@ export function ProfileSettingsPage() {
   }
 
   return (
-  return (
     <div className="flex-1 overflow-y-auto w-full h-full">
       <div className="max-w-3xl mx-auto w-full p-4 md:p-8 space-y-8 pb-12">
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">

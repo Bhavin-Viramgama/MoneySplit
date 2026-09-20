@@ -30,9 +30,13 @@ export function ProfilePage() {
 
     try {
       setSavingProfile(true);
+      const newUsername = editUsername.trim();
+      const normalizedUsername = newUsername.toLowerCase();
+      
       await updateProfile(user.id, {
         display_name: editName.trim(),
-        username: editUsername.trim().toLowerCase(),
+        username: newUsername,
+        username_normalized: normalizedUsername,
       });
       alert('Profile updated successfully!');
     } catch (err: any) {

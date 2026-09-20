@@ -177,7 +177,7 @@ export async function fetchProfile(userId: string) {
 /**
  * Update the public profile for a user.
  */
-export async function updateProfile(userId: string, updates: { display_name?: string; username?: string }) {
+export async function updateProfile(userId: string, updates: { display_name?: string; username?: string; username_normalized?: string }) {
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)
@@ -186,7 +186,21 @@ export async function updateProfile(userId: string, updates: { display_name?: st
     .single();
 
   if (error) {
+    if (error.code === '23505' || error.message.includes('unique constraint')) {
+      throw new Error('This username is already taken. Please choose a different one.');
+    }
     throw new Error(error.message);
+  }
+
+  // If the username was successfully updated, we must also update the synthetic email in Auth
+  if (updates.username_normalized) {
+    const newEmail = buildSyntheticEmail(updates.username_normalized);
+    const { error: authError } = await supabase.auth.updateUser({ email: newEmail });
+    if (authError) {
+      console.error('Failed to update synthetic email in Auth:', authError);
+      // We don't throw here because the profile is already updated, but we should log it.
+      // Note: In a production app, we would want this to be a distributed transaction.
+    }
   }
 
   return data;

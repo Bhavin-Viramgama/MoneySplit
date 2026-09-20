@@ -88,11 +88,12 @@ export function InviteAcceptPage() {
           </div>
         ) : friend ? (
           <div className="p-8 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-ms-accent)]/20 text-[var(--color-ms-accent)] font-medium uppercase text-2xl border border-[var(--color-ms-accent)]/30 mx-auto">
-              {friend.username.charAt(0)}
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-slate-800 text-2xl font-medium uppercase text-slate-300">
+              {friend.display_name?.charAt(0) || friend.username.charAt(0)}
             </div>
-            <h2 className="text-2xl font-bold text-slate-100">
-              {friend.username}
+            
+            <h2 className="text-2xl font-bold text-white mb-1">
+              {friend.display_name || friend.username}
             </h2>
             <p className="text-slate-500 mb-8">@{friend.username}</p>
 

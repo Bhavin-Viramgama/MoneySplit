@@ -13,7 +13,7 @@ import { Button } from '../components/ui/Button';
  */
 export function AuthenticatedLayout() {
   const { profile, signOut, loading } = useAuth();
-  const displayName = profile?.username || 'User';
+  const displayName = profile?.display_name || profile?.username || 'User';
 
   return (
     <div className="h-[100dvh] w-full flex flex-col bg-[var(--color-ms-bg-primary)] overflow-hidden relative">

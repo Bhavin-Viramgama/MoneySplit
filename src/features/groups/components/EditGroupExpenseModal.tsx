@@ -140,7 +140,7 @@ export function EditGroupExpenseModal({ isOpen, onClose, members, expense, onEdi
           <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
             {members.map(m => {
               const profile = m.profile;
-              const name = m.user_id === user?.id ? 'You' : profile?.username;
+              const name = m.user_id === user?.id ? 'You' : profile?.display_name || profile?.username;
               return (
                 <div key={m.user_id} className="flex justify-between items-center">
                   <span className="text-sm text-slate-300 truncate max-w-[150px]">{name}</span>

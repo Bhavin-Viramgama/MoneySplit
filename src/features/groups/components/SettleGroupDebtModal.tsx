@@ -84,7 +84,7 @@ export function SettleGroupDebtModal({ isOpen, onClose, group, members, user, ba
   const getUserName = (id: string) => {
     if (id === user.id) return 'You';
     const profile = members.find(m => m.user_id === id)?.profile;
-    return profile?.username || 'Unknown';
+    return profile?.display_name || profile?.username || 'Unknown';
   };
 
   // Determine QR Code information for the selected debt (only if current user is paying)

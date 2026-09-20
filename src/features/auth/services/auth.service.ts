@@ -72,6 +72,7 @@ export async function signUp(
     options: {
       data: {
         username: originalUsername,
+        display_name: originalUsername,
       },
     },
   });
@@ -176,25 +177,15 @@ export async function fetchProfile(userId: string) {
 /**
  * Update the public profile for a user.
  */
-export async function updateProfile(userId: string, updates: { username?: string }) {
-  const payload: any = { ...updates };
-  if (updates.username) {
-    const trimmed = updates.username.trim();
-    payload.username = trimmed;
-    payload.username_normalized = trimmed.toLowerCase();
-  }
-
+export async function updateProfile(userId: string, updates: { display_name?: string; username?: string }) {
   const { data, error } = await supabase
     .from('profiles')
-    .update(payload)
+    .update(updates)
     .eq('id', userId)
     .select()
     .single();
 
   if (error) {
-    if (error.code === '23505') {
-      throw new Error('This username is already taken. Please choose another one.');
-    }
     throw new Error(error.message);
   }
 

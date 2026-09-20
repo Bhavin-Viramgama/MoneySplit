@@ -255,10 +255,10 @@ export function DashboardPage() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-ms-accent)]/10 text-[var(--color-ms-accent)] font-medium uppercase text-lg border border-[var(--color-ms-accent)]/20">
-                          {friendship.friend?.username?.charAt(0)}
+                          {friendship.friend?.display_name?.charAt(0) || friendship.friend?.username?.charAt(0)}
                         </div>
                         <div>
-                          <h3 className="font-medium text-slate-200">{friendship.friend?.username}</h3>
+                          <h3 className="font-medium text-slate-200">{friendship.friend?.display_name || friendship.friend?.username}</h3>
                           <p className="text-sm text-slate-500">
                              @{friendship.friend?.username}
                              {friendship.status === 'pending' && <span className="ml-2 text-[10px] text-amber-500 uppercase tracking-wider font-semibold">Pending Invite</span>}
@@ -359,10 +359,10 @@ export function DashboardPage() {
                     <div key={friendship.id} className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
                       <div className="flex items-center gap-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-ms-accent)]/10 text-[var(--color-ms-accent)] font-medium uppercase text-lg border border-[var(--color-ms-accent)]/20">
-                          {friendship.friend?.username?.charAt(0)}
+                          {friendship.friend?.display_name?.charAt(0) || friendship.friend?.username?.charAt(0)}
                         </div>
                         <div>
-                          <h3 className="font-medium text-slate-200">{friendship.friend?.username}</h3>
+                          <h3 className="font-medium text-slate-200">{friendship.friend?.display_name || friendship.friend?.username}</h3>
                           <p className="text-sm text-slate-500">@{friendship.friend?.username} sent you a friend request</p>
                         </div>
                       </div>

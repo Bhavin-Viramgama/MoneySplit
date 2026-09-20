@@ -140,11 +140,11 @@ export function GroupMembersModal({ isOpen, onClose, group, members, onMembersUp
               <div key={m.user_id} className="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/5">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-300 font-medium uppercase">
-                    {m.profile?.username?.charAt(0)}
+                    {(m.profile?.display_name || m.profile?.username)?.charAt(0)}
                   </div>
                   <div>
                     <div className="text-sm font-medium text-slate-200">
-                      {m.user_id === user?.id ? 'You' : m.profile?.username}
+                      {m.user_id === user?.id ? 'You' : m.profile?.display_name || m.profile?.username}
                     </div>
                     {m.status === 'pending' && (
                       <div className="text-[10px] text-amber-500 uppercase tracking-wider font-semibold">Pending Invite</div>
@@ -204,10 +204,10 @@ export function GroupMembersModal({ isOpen, onClose, group, members, onMembersUp
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-300 font-medium uppercase">
-                          {friend.username.charAt(0)}
+                          {(friend.display_name || friend.username).charAt(0)}
                         </div>
                         <div className="text-sm font-medium text-slate-200">
-                          {friend.username}
+                          {friend.display_name || friend.username}
                         </div>
                       </div>
                       

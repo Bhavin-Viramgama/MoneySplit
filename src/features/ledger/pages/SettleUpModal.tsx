@@ -14,9 +14,10 @@ interface Props {
   friendship: Friendship;
   netBalance: number;
   user: UserProfile;
+  onSettled?: () => void;
 }
 
-export function SettleUpModal({ isOpen, onClose, friendship, netBalance, user }: Props) {
+export function SettleUpModal({ isOpen, onClose, friendship, netBalance, user, onSettled }: Props) {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [settling, setSettling] = useState(false);
@@ -66,6 +67,7 @@ export function SettleUpModal({ isOpen, onClose, friendship, netBalance, user }:
         entry_date: new Date().toISOString()
       }, requireApproval);
 
+      onSettled?.();
       onClose();
     } catch (err: any) {
       setError(err.message || 'Failed to settle up.');

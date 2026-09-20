@@ -136,6 +136,17 @@ export function GroupDetailsPage() {
     }
   };
 
+  const handleDeleteExpense = async (expenseId: string) => {
+    if (!confirm('Are you sure you want to delete this expense?')) return;
+    try {
+      await groupsService.deleteGroupExpense(expenseId);
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete expense');
+    }
+  };
+
   if (loading || !group || !user) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -318,12 +329,20 @@ export function GroupDetailsPage() {
                            <span>{format(new Date(expense.entry_date), 'MMM d, h:mm a')}</span>
                            
                            {expense.creator_id === user.id && (
-                              <button 
-                                onClick={() => setEditingExpense(expense)}
-                                className="hover:text-white hover:bg-white/10 px-1 rounded transition-colors ml-1"
-                              >
-                                Edit
-                              </button>
+                              <>
+                                <button 
+                                  onClick={() => setEditingExpense(expense)}
+                                  className="hover:text-white hover:bg-white/10 px-1 rounded transition-colors ml-1"
+                                >
+                                  Edit
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteExpense(expense.id)}
+                                  className="hover:text-rose-400 hover:bg-rose-400/10 text-rose-500/80 px-1 rounded transition-colors ml-1"
+                                >
+                                  Delete
+                                </button>
+                              </>
                            )}
                         </div>
                       </div>

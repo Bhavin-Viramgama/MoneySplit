@@ -198,6 +198,25 @@ export const groupsService = {
     return expense as GroupExpense;
   },
 
+  async deleteGroupExpense(expenseId: string): Promise<void> {
+    // Note: Due to foreign key constraints with ON DELETE CASCADE (if configured), 
+    // deleting the expense will automatically delete the associated splits.
+    // If not configured, we should delete splits first. Assuming CASCADE is not guaranteed, we delete splits first.
+    const { error: splitError } = await supabase
+      .from('group_splits')
+      .delete()
+      .eq('expense_id', expenseId);
+
+    if (splitError) throw splitError;
+
+    const { error: expenseError } = await supabase
+      .from('group_expenses')
+      .delete()
+      .eq('id', expenseId);
+
+    if (expenseError) throw expenseError;
+  },
+
   /**
    * Get all expenses for a group
    */

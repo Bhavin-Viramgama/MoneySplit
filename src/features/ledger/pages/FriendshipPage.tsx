@@ -110,10 +110,22 @@ export function FriendshipPage() {
       });
       setAmount('');
       setDescription('');
+      loadData();
     } catch (err) {
       console.error(err);
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleDeleteEntry = async (entryId: string) => {
+    if (!confirm('Are you sure you want to delete this entry?')) return;
+    try {
+      await entriesService.deleteEntry(entryId);
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete entry');
     }
   };
 
@@ -265,12 +277,20 @@ export function FriendshipPage() {
                         )}
                         <span>{format(new Date(entry.entry_date), 'MMM d, h:mm a')}</span>
                         {entry.creator_id === user.id && !entry.is_settlement && (
-                           <button 
-                             onClick={() => setEditingEntry(entry)}
-                             className="hover:text-white hover:bg-white/10 px-1 rounded transition-colors ml-1"
-                           >
-                             Edit
-                           </button>
+                           <>
+                             <button 
+                               onClick={() => setEditingEntry(entry)}
+                               className="hover:text-white hover:bg-white/10 px-1 rounded transition-colors ml-1"
+                             >
+                               Edit
+                             </button>
+                             <button 
+                               onClick={() => handleDeleteEntry(entry.id)}
+                               className="hover:text-rose-400 hover:bg-rose-400/10 text-rose-500/80 px-1 rounded transition-colors ml-1"
+                             >
+                               Delete
+                             </button>
+                           </>
                         )}
                       </div>
                     </div>
@@ -331,6 +351,7 @@ export function FriendshipPage() {
             friendship={friendship} 
             netBalance={netBalance}
             user={profile!}
+            onSettled={loadData}
          />
       )}
 

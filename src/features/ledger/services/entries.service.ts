@@ -121,6 +121,15 @@ export const entriesService = {
     return data as FinanceEntry;
   },
 
+  async deleteEntry(entryId: string): Promise<void> {
+    const { error } = await supabase
+      .from('finance_entries')
+      .delete()
+      .eq('id', entryId);
+
+    if (error) throw error;
+  },
+
   /**
    * Subscribe to real-time changes for a specific friendship's entries
    */

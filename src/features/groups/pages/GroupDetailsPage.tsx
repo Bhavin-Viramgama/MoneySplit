@@ -283,7 +283,7 @@ export function GroupDetailsPage() {
                     )}
                   >
                     <div className={classNames(
-                      "min-w-[280px] max-w-[80%] rounded-2xl px-5 py-4 shadow-xl backdrop-blur-md border",
+                      "min-w-[240px] sm:min-w-[280px] max-w-[95%] sm:max-w-[80%] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl backdrop-blur-md border",
                       isMine 
                         ? "bg-[var(--color-ms-accent)]/10 text-white border-[var(--color-ms-accent)]/20 rounded-br-sm" 
                         : "bg-white/5 text-slate-100 border-white/5 rounded-bl-sm"

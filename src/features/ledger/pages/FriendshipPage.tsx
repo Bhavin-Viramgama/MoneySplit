@@ -151,7 +151,7 @@ export function FriendshipPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] max-h-[800px] max-w-2xl mx-auto rounded-3xl overflow-hidden border border-white/5 bg-black shadow-2xl relative">
+    <div className="flex flex-col flex-1 w-full h-full sm:h-[calc(100vh-80px)] sm:max-h-[800px] max-w-2xl mx-auto sm:rounded-3xl overflow-hidden sm:border border-white/5 bg-black sm:shadow-2xl relative">
       
       {/* Background glow effects */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[var(--color-ms-accent)]/10 rounded-full blur-[100px] pointer-events-none" />
@@ -222,7 +222,7 @@ export function FriendshipPage() {
                   )}
                 >
                   <div className={classNames(
-                    "max-w-[80%] rounded-2xl px-5 py-4 shadow-xl backdrop-blur-md border",
+                    "max-w-[95%] sm:max-w-[80%] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl backdrop-blur-md border",
                     isMine 
                       ? "bg-[var(--color-ms-accent)]/10 text-white border-[var(--color-ms-accent)]/20 rounded-br-sm" 
                       : "bg-white/5 text-slate-100 border-white/5 rounded-bl-sm"

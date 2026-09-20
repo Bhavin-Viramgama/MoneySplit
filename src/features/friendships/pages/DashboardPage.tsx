@@ -186,8 +186,8 @@ export function DashboardPage() {
                 <Wallet className="h-5 w-5" />
                 <h3 className="font-medium">Total Balance</h3>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => loadDashboard(false)} title="Refresh Balance" className="h-8 w-8 p-0 rounded-full hover:bg-white/10 hover:text-white">
-                <RefreshCw className={classNames("h-4 w-4", loading ? "animate-spin" : "")} />
+              <Button size="sm" variant="ghost" onClick={() => loadDashboard(false)} title="Refresh Balance" className="h-10 w-10 p-0 rounded-full hover:bg-white/10 hover:text-white">
+                <RefreshCw className={classNames("h-5 w-5", loading ? "animate-spin" : "")} />
               </Button>
             </div>
             <div className={`mt-4 text-5xl font-bold tracking-tighter ${

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings, CreditCard, Plus, Trash2, QrCode, ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { updateProfile } from '@/features/auth/services/auth.service';
 import { paymentsService } from '../services/payments.service';
 import type { PaymentMethod } from '@/types';
 import { Button } from '@/components/ui/Button';
@@ -25,11 +24,6 @@ export function ProfileSettingsPage() {
   const [newPayeeName, setNewPayeeName] = useState('');
   const [adding, setAdding] = useState(false);
 
-  // Profile Edit
-  const [editName, setEditName] = useState('');
-  const [editUsername, setEditUsername] = useState('');
-  const [savingProfile, setSavingProfile] = useState(false);
-
   useEffect(() => {
     if (user && profile) {
       loadSettings();
@@ -40,8 +34,6 @@ export function ProfileSettingsPage() {
     if (!user || !profile) return;
     try {
       setLoading(true);
-      setEditName(profile.display_name || '');
-      setEditUsername(profile.username || '');
       setRequireApproval(profile.require_settlement_approval);
       setAutoAcceptRequests(profile.auto_accept_requests);
       const userMethods = await paymentsService.getUserPaymentMethods(user.id);
@@ -74,26 +66,6 @@ export function ProfileSettingsPage() {
     } catch (err) {
       console.error(err);
       setAutoAcceptRequests(!newValue);
-    }
-  };
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !editName.trim() || !editUsername.trim()) return;
-
-    try {
-      setSavingProfile(true);
-      await updateProfile(user.id, {
-        display_name: editName.trim(),
-        username: editUsername.trim().toLowerCase(),
-      });
-      // The auth context will eventually catch up, or we can rely on a page reload if strictly needed,
-      // but usually the realtime listener handles it or we can just show success.
-      alert('Profile updated successfully!');
-    } catch (err: any) {
-      alert(err.message || 'Failed to update profile');
-    } finally {
-      setSavingProfile(false);
     }
   };
 
@@ -143,84 +115,10 @@ export function ProfileSettingsPage() {
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-slate-400 hover:text-white">
             <ChevronLeft className="h-5 w-5" />
-            {/* <span className="hidden sm:inline ml-1 font-medium">Back</span> */}
           </Button>
           <Settings className="h-6 w-6 text-slate-400" />
           <h1 className="text-2xl font-semibold text-white tracking-tight">Settings</h1>
         </div>
-
-        {/* Profile Settings */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-medium text-slate-200">Profile</h2>
-          
-          <form onSubmit={handleUpdateProfile} className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl space-y-4">
-            <div className="space-y-4 max-w-sm">
-              <Input 
-                label="Display Name" 
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                placeholder="Your Name"
-                required
-              />
-              <Input 
-                label="Username" 
-                value={editUsername}
-                onChange={(e) => setEditUsername(e.target.value)}
-                placeholder="username"
-                required
-              />
-              <Button type="submit" loading={savingProfile} disabled={savingProfile}>
-                Save Profile
-              </Button>
-            </div>
-          </form>
-        </section>
-
-        {/* Account Settings */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-medium text-slate-200">Account</h2>
-
-          <div className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium text-white">Require Settlement Approval</h3>
-                <p className="text-sm text-slate-500 mt-1 max-w-md">
-                  When friends record that they paid you back, it will require your approval before updating the balance.
-                </p>
-              </div>
-
-              {/* Simple toggle switch */}
-              <button
-                onClick={handleToggleApproval}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${requireApproval ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
-                  }`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${requireApproval ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-              </button>
-            </div>
-
-            <hr className="border-white/5 my-4" />
-
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium text-white">Auto-Accept Invites</h3>
-                <p className="text-sm text-slate-500 mt-1 max-w-md">
-                  Automatically accept incoming friend and group invites. If disabled, you'll need to manually approve them.
-                </p>
-              </div>
-
-              <button
-                onClick={handleToggleAutoAccept}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${autoAcceptRequests ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
-                  }`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoAcceptRequests ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-              </button>
-            </div>
-          </div>
-        </section>
 
         {/* Payment Methods */}
         <section className="space-y-4">
@@ -312,6 +210,52 @@ export function ProfileSettingsPage() {
               ))}
             </div>
           )}
+        </section>
+
+        {/* Account Settings */}
+        <section className="space-y-4">
+          <h2 className="text-lg font-medium text-slate-200">Account</h2>
+
+          <div className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-white">Require Settlement Approval</h3>
+                <p className="text-sm text-slate-500 mt-1 max-w-md">
+                  When friends record that they paid you back, it will require your approval before updating the balance.
+                </p>
+              </div>
+
+              {/* Simple toggle switch */}
+              <button
+                onClick={handleToggleApproval}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${requireApproval ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
+                  }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${requireApproval ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+              </button>
+            </div>
+
+            <hr className="border-white/5 my-4" />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-white">Auto-Accept Invites</h3>
+                <p className="text-sm text-slate-500 mt-1 max-w-md">
+                  Automatically accept incoming friend and group invites. If disabled, you'll need to manually approve them.
+                </p>
+              </div>
+
+              <button
+                onClick={handleToggleAutoAccept}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${autoAcceptRequests ? 'bg-[var(--color-ms-accent)]' : 'bg-slate-700'
+                  }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoAcceptRequests ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+              </button>
+            </div>
+          </div>
         </section>
       </div>
     </div>

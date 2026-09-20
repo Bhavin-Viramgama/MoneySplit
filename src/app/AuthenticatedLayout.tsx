@@ -39,7 +39,7 @@ export function AuthenticatedLayout() {
               </Link>
 
               {/* Avatar + username */}
-              <Link to="/settings" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <div
                   className="
                     w-8 h-8 rounded-full

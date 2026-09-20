@@ -10,6 +10,7 @@ import { InviteAcceptPage } from '../features/friendships/pages/InviteAcceptPage
 import { FriendshipPage } from '../features/ledger/pages/FriendshipPage';
 import { GroupDetailsPage } from '../features/groups/pages/GroupDetailsPage';
 import { ProfileSettingsPage } from '../features/payments/pages/ProfileSettingsPage';
+import { ProfilePage } from '../features/auth/pages/ProfilePage';
 
 /**
  * Page wrapper for animations
@@ -74,6 +75,7 @@ export function AppRoutes() {
         <Route path="/invite/:token" element={<PageTransition><InviteAcceptPage /></PageTransition>} />
         <Route path="/friendship/:id" element={<PageTransition><FriendshipPage /></PageTransition>} />
         <Route path="/groups/:id" element={<PageTransition><GroupDetailsPage /></PageTransition>} />
+        <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
         <Route path="/settings" element={<PageTransition><ProfileSettingsPage /></PageTransition>} />
         {/* Future milestone routes will be added here */}
       </Route>

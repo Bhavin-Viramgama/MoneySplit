@@ -63,6 +63,12 @@ export function DashboardPage() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${user.id}` }, () => {
           loadDashboard();
         })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'finance_entries' }, () => {
+          loadDashboard();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'group_expenses' }, () => {
+          loadDashboard();
+        })
         .subscribe();
 
       return () => {

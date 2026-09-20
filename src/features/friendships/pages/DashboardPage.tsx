@@ -15,6 +15,7 @@ import { supabase } from '@/lib/supabase';
 import type { Group } from '@/types';
 import { paymentsService } from '@/features/payments/services/payments.service';
 import { UpiPromptModal } from '@/features/payments/components/UpiPromptModal';
+import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -49,7 +50,7 @@ export function DashboardPage() {
 
   useEffect(() => {
     if (user) {
-      loadDashboard();
+      loadDashboard(true);
 
       // Subscribe to real-time changes for friend requests and group invites
       const channel = supabase
@@ -74,9 +75,9 @@ export function DashboardPage() {
     }
   }, [user]);
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (isInitialLoad = false) => {
     try {
-      setLoading(true);
+      if (isInitialLoad) setLoading(true);
       if (!user) return;
       
       const friendsData = await friendshipsService.getFriendships(user.id);
@@ -185,14 +186,15 @@ export function DashboardPage() {
                 <Wallet className="h-5 w-5" />
                 <h3 className="font-medium">Total Balance</h3>
               </div>
-              <Button size="sm" variant="ghost" onClick={loadDashboard} title="Refresh Balance" className="h-8 w-8 p-0 rounded-full hover:bg-white/10 hover:text-white">
+              <Button size="sm" variant="ghost" onClick={() => loadDashboard(false)} title="Refresh Balance" className="h-8 w-8 p-0 rounded-full hover:bg-white/10 hover:text-white">
                 <RefreshCw className={classNames("h-4 w-4", loading ? "animate-spin" : "")} />
               </Button>
             </div>
             <div className={`mt-4 text-5xl font-bold tracking-tighter ${
               totalBalance > 0 ? 'text-[var(--color-ms-accent)]' : totalBalance < 0 ? 'text-rose-500' : 'text-white'
             }`}>
-              {totalBalance > 0 ? '+' : ''}{formatCurrency(totalBalance)}
+              {totalBalance > 0 ? '+' : ''}
+              <AnimatedCounter value={totalBalance} format={formatCurrency} />
             </div>
             <p className="mt-1 text-sm text-slate-500">
               {totalBalance > 0 ? 'You are owed' : totalBalance < 0 ? 'You owe' : 'All settled up'}

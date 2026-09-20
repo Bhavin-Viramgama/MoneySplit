@@ -122,7 +122,7 @@ export function AddGroupExpenseModal({ isOpen, onClose, group, members, onAdded 
             >
               {members.map(m => (
                 <option key={m.user_id} value={m.user_id} className="bg-slate-900 text-white">
-                  {m.profile?.display_name || m.profile?.username}
+                  {m.profile?.username}
                 </option>
               ))}
             </select>

@@ -72,7 +72,6 @@ export async function signUp(
     options: {
       data: {
         username: originalUsername,
-        display_name: originalUsername,
       },
     },
   });
@@ -177,7 +176,7 @@ export async function fetchProfile(userId: string) {
 /**
  * Update the public profile for a user.
  */
-export async function updateProfile(userId: string, updates: { display_name?: string; username?: string }) {
+export async function updateProfile(userId: string, updates: { username?: string }) {
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)

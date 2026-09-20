@@ -203,7 +203,7 @@ export function FriendshipPage() {
   if (!friendship || !user) return null;
 
   const netBalance = entriesService.calculateNetBalance(entries, user.id);
-  const friendName = friendship.friend?.display_name || friendship.friend?.username;
+  const friendName = friendship.friend?.username;
 
   // Determine the cleared_at timestamp for the current user
   const isUser1 = friendship.user_id_1 === user.id;

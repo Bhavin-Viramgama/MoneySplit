@@ -253,9 +253,11 @@ export function GroupDetailsPage() {
               <Calculator className="mr-2 h-4 w-4" />
               Simplify Debts
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => setIsSettleModalOpen(true)}>
-              Settle Up
-            </Button>
+            {myBalance < 0 && (
+              <Button size="sm" variant="secondary" onClick={() => setIsSettleModalOpen(true)}>
+                Settle Up
+              </Button>
+            )}
             <Button size="sm" onClick={() => setIsAddExpenseOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Expense
@@ -313,8 +315,8 @@ export function GroupDetailsPage() {
                   {simplifiedDebts.map((debt, i) => {
                     const fromUser = members.find(m => m.user_id === debt.from)?.profile;
                     const toUser = members.find(m => m.user_id === debt.to)?.profile;
-                    const fromName = fromUser?.id === user.id ? 'You' : fromUser?.display_name || fromUser?.username;
-                    const toName = toUser?.id === user.id ? 'You' : toUser?.display_name || toUser?.username;
+                    const fromName = fromUser?.id === user.id ? 'You' : fromUser?.username;
+                    const toName = toUser?.id === user.id ? 'You' : toUser?.username;
 
                     return (
                       <div key={i} className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5">
@@ -377,7 +379,7 @@ export function GroupDetailsPage() {
                       
                       <div className="flex items-center justify-between text-[11px] opacity-60 mt-1">
                         <span>
-                           {isMine ? 'You paid' : `${payer?.display_name || payer?.username} paid`}
+                           {isMine ? 'You paid' : `${payer?.username} paid`}
                         </span>
                         <div className="flex items-center gap-2">
                            {expense.is_edited && (
@@ -413,7 +415,7 @@ export function GroupDetailsPage() {
                         {expense.splits?.map(split => {
                           if (split.amount_owed === 0) return null;
                           const splitUser = members.find(m => m.user_id === split.user_id)?.profile;
-                          const name = splitUser?.id === user.id ? 'You' : splitUser?.display_name || splitUser?.username;
+                          const name = splitUser?.id === user.id ? 'You' : splitUser?.username;
                           return (
                             <div key={split.user_id} className="flex justify-between text-xs text-slate-400">
                                <span>{name}</span>
@@ -444,10 +446,10 @@ export function GroupDetailsPage() {
                return (
                  <div key={m.user_id} className="flex justify-between items-center text-sm">
                    <div className="flex items-center gap-2">
-                     <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-slate-300 uppercase">
-                       {(m.profile?.display_name || m.profile?.username)?.charAt(0)}
+                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white font-bold shadow-inner">
+                       {m.profile?.username?.charAt(0)}
                      </div>
-                     <span className="text-slate-200">{m.user_id === user.id ? 'You' : m.profile?.display_name || m.profile?.username}</span>
+                     <span className="text-slate-200">{m.user_id === user.id ? 'You' : m.profile?.username}</span>
                    </div>
                    <span className={`text-xs font-medium ${bal > 0 ? 'text-emerald-400' : bal < 0 ? 'text-rose-400' : 'text-slate-500'}`}>
                      {bal > 0 ? '+' : ''}{bal === 0 ? '0' : formatCurrency(bal)}
@@ -471,9 +473,11 @@ export function GroupDetailsPage() {
            <Calculator className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
            Simplify
          </Button>
-         <Button variant="secondary" className="flex-1 px-1 text-xs sm:text-sm" onClick={() => setIsSettleModalOpen(true)}>
-           Settle
-         </Button>
+         {myBalance < 0 && (
+           <Button variant="secondary" className="flex-1 px-1 text-xs sm:text-sm" onClick={() => setIsSettleModalOpen(true)}>
+             Settle
+           </Button>
+         )}
          <Button className="flex-1 px-1 text-xs sm:text-sm" onClick={() => setIsAddExpenseOpen(true)}>
            <Plus className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
            Expense
@@ -508,9 +512,9 @@ export function GroupDetailsPage() {
                    <div key={m.user_id} className="flex justify-between items-center text-sm">
                      <div className="flex items-center gap-3">
                        <div className="w-8 h-8 rounded-full bg-[var(--color-ms-accent)]/10 border border-[var(--color-ms-accent)]/20 flex items-center justify-center text-xs text-[var(--color-ms-accent)] uppercase">
-                         {(m.profile?.display_name || m.profile?.username)?.charAt(0)}
+                         {m.profile?.username?.charAt(0)}
                        </div>
-                       <span className="text-slate-200 font-medium">{m.user_id === user.id ? 'You' : m.profile?.display_name || m.profile?.username}</span>
+                       <span className="text-slate-200 font-medium">{m.user_id === user.id ? 'You' : m.profile?.username}</span>
                      </div>
                      <span className={`font-semibold ${bal > 0 ? 'text-emerald-400' : bal < 0 ? 'text-rose-400' : 'text-slate-500'}`}>
                        {bal > 0 ? '+' : ''}{bal === 0 ? '0' : formatCurrency(bal)}

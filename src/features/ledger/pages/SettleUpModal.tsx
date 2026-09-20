@@ -80,7 +80,7 @@ export function SettleUpModal({ isOpen, onClose, friendship, netBalance, user, o
 
   const defaultMethod = paymentMethods.find(m => m.is_default) || paymentMethods[0];
   const upiId = defaultMethod?.type === 'upi' ? defaultMethod?.details?.upi_id : null;
-  const payeeName = defaultMethod?.details?.payee_name || friendship.friend?.display_name || friendship.friend?.username;
+  const payeeName = defaultMethod?.details?.payee_name || friendship.friend?.username;
   
   // Format for UPI deep link
   const upiLink = upiId ? `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName || '')}&am=${Math.abs(netBalance)}&cu=INR` : '';
@@ -109,7 +109,7 @@ export function SettleUpModal({ isOpen, onClose, friendship, netBalance, user, o
             <div className="text-center rounded-2xl bg-white/5 p-8 border border-white/5 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[var(--color-ms-accent)]/20 rounded-full blur-[40px] pointer-events-none" />
               <p className="text-sm text-slate-400 mb-3 relative z-10 font-medium">
-                {iAmPaying ? 'You are paying' : `${friendship.friend?.display_name} is paying you`}
+                {iAmPaying ? 'You are paying' : `${friendship.friend?.username} is paying you`}
               </p>
               <div className="text-5xl font-bold tracking-tighter text-white relative z-10 drop-shadow-md">
                 {formatCurrency(Math.abs(netBalance))}
@@ -147,7 +147,7 @@ export function SettleUpModal({ isOpen, onClose, friendship, netBalance, user, o
 
             {iAmPaying && !upiId && paymentMethods.length === 0 && (
               <div className="text-sm text-slate-500 text-center py-4">
-                {friendship.friend?.display_name} hasn't added any payment methods yet. You'll need to arrange payment outside the app.
+                {friendship.friend?.username} hasn't added any payment methods yet. You'll need to arrange payment outside the app.
               </div>
             )}
 

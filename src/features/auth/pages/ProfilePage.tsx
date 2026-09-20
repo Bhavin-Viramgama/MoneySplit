@@ -11,14 +11,12 @@ export function ProfilePage() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
 
-  const [editName, setEditName] = useState('');
   const [editUsername, setEditUsername] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user && profile) {
-      setEditName(profile.display_name || '');
       setEditUsername(profile.username || '');
       setLoading(false);
     }
@@ -26,12 +24,11 @@ export function ProfilePage() {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !editName.trim() || !editUsername.trim()) return;
+    if (!user || !editUsername.trim()) return;
 
     try {
       setSavingProfile(true);
       await updateProfile(user.id, {
-        display_name: editName.trim(),
         username: editUsername.trim().toLowerCase(),
       });
       alert('Profile updated successfully!');
@@ -66,13 +63,6 @@ export function ProfilePage() {
           
           <form onSubmit={handleUpdateProfile} className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl shadow-xl space-y-4">
             <div className="space-y-4 max-w-sm">
-              <Input 
-                label="Display Name" 
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                placeholder="Your Name"
-                required
-              />
               <Input 
                 label="Username" 
                 value={editUsername}

@@ -5,7 +5,6 @@ export interface UserProfile {
   id: string;
   username: string;
   username_normalized: string;
-  display_name: string | null;
   avatar_path: string | null;
   require_settlement_approval: boolean;
   auto_accept_requests: boolean;

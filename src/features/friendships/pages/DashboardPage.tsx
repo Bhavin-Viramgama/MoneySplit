@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { UserPlus, Wallet, Users, ArrowRight } from 'lucide-react';
+import { Wallet, Users, UserPlus, ArrowRight, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { friendshipsService } from '../services/friendships.service';
 import { entriesService } from '@/features/ledger/services/entries.service';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { AddFriendModal } from '../components/AddFriendModal';
 import { CreateGroupModal } from '@/features/groups/components/CreateGroupModal';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, classNames } from '@/lib/utils';
 import { groupsService } from '@/features/groups/services/groups.service';
 import { supabase } from '@/lib/supabase';
 import type { Group } from '@/types';
@@ -63,7 +63,7 @@ export function DashboardPage() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${user.id}` }, () => {
           loadDashboard();
         })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'finance_entries' }, () => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'entries' }, () => {
           loadDashboard();
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'group_expenses' }, () => {
@@ -183,9 +183,14 @@ export function DashboardPage() {
         <div className="grid gap-4">
           <div className="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-xl relative overflow-hidden backdrop-blur-xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-ms-accent)]/20 rounded-full blur-[50px] pointer-events-none" />
-            <div className="flex items-center gap-3 text-slate-400">
-              <Wallet className="h-5 w-5" />
-              <h3 className="font-medium">Total Balance</h3>
+            <div className="flex items-center justify-between text-slate-400 relative z-10">
+              <div className="flex items-center gap-3">
+                <Wallet className="h-5 w-5" />
+                <h3 className="font-medium">Total Balance</h3>
+              </div>
+              <Button size="sm" variant="ghost" onClick={loadDashboard} title="Refresh Balance" className="h-8 w-8 p-0 rounded-full hover:bg-white/10 hover:text-white">
+                <RefreshCw className={classNames("h-4 w-4", loading ? "animate-spin" : "")} />
+              </Button>
             </div>
             <div className={`mt-4 text-5xl font-bold tracking-tighter ${
               totalBalance > 0 ? 'text-[var(--color-ms-accent)]' : totalBalance < 0 ? 'text-rose-500' : 'text-white'

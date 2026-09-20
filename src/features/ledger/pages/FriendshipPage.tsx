@@ -33,6 +33,12 @@ export function FriendshipPage() {
   const [isSettleModalOpen, setIsSettleModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinanceEntry | null>(null);
 
+  // Bulk Delete / Selection Mode
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedEntries, setSelectedEntries] = useState<Set<string>>(new Set());
+  const [deletingBulk, setDeletingBulk] = useState(false);
+  const pressTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -126,6 +132,63 @@ export function FriendshipPage() {
     } catch (err) {
       console.error(err);
       alert('Failed to delete entry');
+    }
+  };
+
+  const toggleSelection = (entryId: string) => {
+    setSelectedEntries(prev => {
+      const next = new Set(prev);
+      if (next.has(entryId)) next.delete(entryId);
+      else next.add(entryId);
+      if (next.size === 0) setIsSelectionMode(false);
+      return next;
+    });
+  };
+
+  const handlePointerDown = (entryId: string) => {
+    // Only allow selection of entries that belong to the user (can be deleted)
+    const entry = entries.find(e => e.id === entryId);
+    if (!entry || entry.creator_id !== user?.id) return;
+    
+    pressTimers.current[entryId] = setTimeout(() => {
+      setIsSelectionMode(true);
+      setSelectedEntries(new Set([entryId]));
+      delete pressTimers.current[entryId];
+    }, 500);
+  };
+
+  const handlePointerUpOrLeave = (entryId: string, isClick: boolean) => {
+    if (pressTimers.current[entryId]) {
+      clearTimeout(pressTimers.current[entryId]);
+      delete pressTimers.current[entryId];
+      
+      // If it was a short click and we are in selection mode, toggle it
+      if (isClick && isSelectionMode) {
+        toggleSelection(entryId);
+      }
+    } else if (isClick && isSelectionMode) {
+        // If timer was already cleared (e.g. long press triggered), we don't want to immediately toggle it off on the pointer up event.
+        // Wait, if it triggered, the timer is cleared inside the setTimeout? No, setTimeout doesn't clear the key.
+        // So the key is still there, but we don't want to toggle if it just triggered.
+        // Actually, if the timer fires, we should delete the key so pointerUp knows it was a long press.
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedEntries.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedEntries.size} entries?`)) return;
+    
+    setDeletingBulk(true);
+    try {
+      await Promise.all(Array.from(selectedEntries).map(id => entriesService.deleteEntry(id)));
+      setIsSelectionMode(false);
+      setSelectedEntries(new Set());
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete some entries');
+    } finally {
+      setDeletingBulk(false);
     }
   };
 
@@ -243,8 +306,13 @@ export function FriendshipPage() {
                     isMine ? "justify-end" : "justify-start"
                   )}
                 >
-                  <div className={classNames(
-                    "max-w-[95%] sm:max-w-[80%] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl backdrop-blur-md border",
+                  <div 
+                    onPointerDown={() => handlePointerDown(entry.id)}
+                    onPointerUp={() => handlePointerUpOrLeave(entry.id, true)}
+                    onPointerLeave={() => handlePointerUpOrLeave(entry.id, false)}
+                    className={classNames(
+                    "max-w-[95%] sm:max-w-[80%] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl backdrop-blur-md border cursor-pointer transition-all",
+                    isSelectionMode && selectedEntries.has(entry.id) ? "ring-2 ring-rose-500/80 scale-[0.98]" : "",
                     isMine 
                       ? "bg-[var(--color-ms-accent)]/10 text-white border-[var(--color-ms-accent)]/20 rounded-br-sm" 
                       : "bg-white/5 text-slate-100 border-white/5 rounded-bl-sm"
@@ -363,6 +431,30 @@ export function FriendshipPage() {
           onEdited={loadData}
         />
       )}
+      {/* Bulk Delete Floating Action Bar */}
+      <AnimatePresence>
+        {isSelectionMode && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-xl border border-rose-500/30 text-white px-6 py-4 rounded-full shadow-2xl z-50 flex items-center gap-6"
+          >
+            <span className="font-medium">{selectedEntries.size} selected</span>
+            <div className="flex items-center gap-3">
+              <Button size="sm" variant="ghost" onClick={() => {
+                setIsSelectionMode(false);
+                setSelectedEntries(new Set());
+              }} className="text-slate-400 hover:text-white rounded-full">
+                Cancel
+              </Button>
+              <Button size="sm" variant="danger" disabled={deletingBulk || selectedEntries.size === 0} onClick={handleBulkDelete} className="rounded-full shadow-lg shadow-rose-500/20">
+                {deletingBulk ? <LoadingSpinner className="h-4 w-4" /> : 'Delete All'}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

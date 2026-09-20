@@ -123,7 +123,7 @@ export const entriesService = {
 
   async deleteEntry(entryId: string): Promise<void> {
     const { error } = await supabase
-      .from('finance_entries')
+      .from('entries')
       .delete()
       .eq('id', entryId);
 
@@ -144,7 +144,7 @@ export const entriesService = {
         {
           event: '*',
           schema: 'public',
-          table: 'finance_entries',
+          table: 'entries',
           filter: `friendship_id=eq.${friendshipId}`
         },
         (payload) => {

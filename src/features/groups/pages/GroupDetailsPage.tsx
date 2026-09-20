@@ -36,6 +36,12 @@ export function GroupDetailsPage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [processingAction, setProcessingAction] = useState(false);
 
+  // Bulk Delete / Selection Mode
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedExpenses, setSelectedExpenses] = useState<Set<string>>(new Set());
+  const [deletingBulk, setDeletingBulk] = useState(false);
+  const pressTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -144,6 +150,56 @@ export function GroupDetailsPage() {
     } catch (err) {
       console.error(err);
       alert('Failed to delete expense');
+    }
+  };
+
+  const toggleSelection = (expenseId: string) => {
+    setSelectedExpenses(prev => {
+      const next = new Set(prev);
+      if (next.has(expenseId)) next.delete(expenseId);
+      else next.add(expenseId);
+      if (next.size === 0) setIsSelectionMode(false);
+      return next;
+    });
+  };
+
+  const handlePointerDown = (expenseId: string) => {
+    const expense = expenses.find(e => e.id === expenseId);
+    if (!expense || expense.creator_id !== user?.id) return;
+    
+    pressTimers.current[expenseId] = setTimeout(() => {
+      setIsSelectionMode(true);
+      setSelectedExpenses(new Set([expenseId]));
+      delete pressTimers.current[expenseId];
+    }, 500);
+  };
+
+  const handlePointerUpOrLeave = (expenseId: string, isClick: boolean) => {
+    if (pressTimers.current[expenseId]) {
+      clearTimeout(pressTimers.current[expenseId]);
+      delete pressTimers.current[expenseId];
+      
+      if (isClick && isSelectionMode) {
+        toggleSelection(expenseId);
+      }
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedExpenses.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedExpenses.size} expenses?`)) return;
+    
+    setDeletingBulk(true);
+    try {
+      await Promise.all(Array.from(selectedExpenses).map(id => groupsService.deleteGroupExpense(id)));
+      setIsSelectionMode(false);
+      setSelectedExpenses(new Set());
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete some expenses');
+    } finally {
+      setDeletingBulk(false);
     }
   };
 
@@ -296,12 +352,17 @@ export function GroupDetailsPage() {
                       isMine ? "justify-end" : "justify-start"
                     )}
                   >
-                    <div className={classNames(
-                      "min-w-[240px] sm:min-w-[280px] max-w-[95%] sm:max-w-[80%] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl backdrop-blur-md border",
-                      isMine 
-                        ? "bg-[var(--color-ms-accent)]/10 text-white border-[var(--color-ms-accent)]/20 rounded-br-sm" 
-                        : "bg-white/5 text-slate-100 border-white/5 rounded-bl-sm"
-                    )}>
+                  <div 
+                    onPointerDown={() => handlePointerDown(expense.id)}
+                    onPointerUp={() => handlePointerUpOrLeave(expense.id, true)}
+                    onPointerLeave={() => handlePointerUpOrLeave(expense.id, false)}
+                    className={classNames(
+                    "min-w-[240px] sm:min-w-[280px] max-w-[95%] sm:max-w-[80%] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl backdrop-blur-md border cursor-pointer transition-all",
+                    isSelectionMode && selectedExpenses.has(expense.id) ? "ring-2 ring-rose-500/80 scale-[0.98]" : "",
+                    isMine 
+                      ? "bg-[var(--color-ms-accent)]/10 text-white border-[var(--color-ms-accent)]/20 rounded-br-sm" 
+                      : "bg-white/5 text-slate-100 border-white/5 rounded-bl-sm"
+                  )}>
                       <div className="flex justify-between items-start gap-4 mb-1">
                         <span className="font-medium text-[15px]">
                           {expense.description}
@@ -506,6 +567,30 @@ export function GroupDetailsPage() {
           onSettled={loadData}
         />
       )}
+      {/* Bulk Delete Floating Action Bar */}
+      <AnimatePresence>
+        {isSelectionMode && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-xl border border-rose-500/30 text-white px-6 py-4 rounded-full shadow-2xl z-50 flex items-center gap-6"
+          >
+            <span className="font-medium">{selectedExpenses.size} selected</span>
+            <div className="flex items-center gap-3">
+              <Button size="sm" variant="ghost" onClick={() => {
+                setIsSelectionMode(false);
+                setSelectedExpenses(new Set());
+              }} className="text-slate-400 hover:text-white rounded-full">
+                Cancel
+              </Button>
+              <Button size="sm" variant="danger" disabled={deletingBulk || selectedExpenses.size === 0} onClick={handleBulkDelete} className="rounded-full shadow-lg shadow-rose-500/20">
+                {deletingBulk ? <LoadingSpinner className="h-4 w-4" /> : 'Delete All'}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

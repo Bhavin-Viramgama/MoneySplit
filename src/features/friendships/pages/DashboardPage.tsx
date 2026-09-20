@@ -54,13 +54,10 @@ export function DashboardPage() {
       // Subscribe to real-time changes for friend requests and group invites
       const channel = supabase
         .channel('dashboard_updates')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `user_id_1=eq.${user.id}` }, () => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => {
           loadDashboard();
         })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `user_id_2=eq.${user.id}` }, () => {
-          loadDashboard();
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${user.id}` }, () => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members' }, () => {
           loadDashboard();
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'entries' }, () => {

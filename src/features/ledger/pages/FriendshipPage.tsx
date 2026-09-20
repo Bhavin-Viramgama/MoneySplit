@@ -13,6 +13,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { formatCurrency, classNames } from '@/lib/utils';
 import { SettleUpModal } from './SettleUpModal';
 import { EditEntryModal } from '../components/EditEntryModal';
+import { supabase } from '@/lib/supabase';
 
 export function FriendshipPage() {
   const { id } = useParams<{ id: string }>();
@@ -47,8 +48,17 @@ export function FriendshipPage() {
         // In a highly optimized app, we'd apply the payload incrementally.
         loadData();
       });
+
+      const friendshipChannel = supabase
+        .channel(`friendship_${id}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `id=eq.${id}` }, () => {
+          loadData();
+        })
+        .subscribe();
+
       return () => {
         entriesService.unsubscribe(channel);
+        supabase.removeChannel(friendshipChannel);
       };
     }
   }, [id, user]);
@@ -248,8 +258,7 @@ export function FriendshipPage() {
                       <div className="flex items-center gap-2">
                         {entry.is_edited && (
                            <span 
-                             className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] uppercase tracking-wider cursor-help"
-                             title={`Original: ${entry.original_description} (${formatCurrency(entry.original_amount || 0)})`}
+                             className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] uppercase tracking-wider"
                            >
                              Edited
                            </span>
@@ -290,7 +299,7 @@ export function FriendshipPage() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-white/5 bg-black/60 backdrop-blur-xl p-4 z-10">
+      <div className="border-t border-white/5 bg-black/60 backdrop-blur-xl p-4 pb-safe z-10">
         <form onSubmit={handleQuickAdd} className="flex gap-3">
           <Input 
             placeholder="Amount" 

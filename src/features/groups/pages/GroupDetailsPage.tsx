@@ -47,8 +47,11 @@ export function GroupDetailsPage() {
   useEffect(() => {
     if (id) {
       const channel = supabase
-        .channel(`group_expenses_${id}`)
+        .channel(`group_data_${id}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'group_expenses', filter: `group_id=eq.${id}` }, () => {
+          loadData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `group_id=eq.${id}` }, () => {
           loadData();
         })
         .subscribe();
@@ -307,8 +310,7 @@ export function GroupDetailsPage() {
                         <div className="flex items-center gap-2">
                            {expense.is_edited && (
                               <span 
-                                className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] uppercase tracking-wider cursor-help"
-                                title={`Original: ${expense.original_description} (${formatCurrency(expense.original_amount || 0)})`}
+                                className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] uppercase tracking-wider"
                               >
                                 Edited
                               </span>
@@ -384,7 +386,7 @@ export function GroupDetailsPage() {
       </div>
 
       {/* Mobile Bottom Bar */}
-      <div className="md:hidden border-t border-white/5 bg-black/80 backdrop-blur-xl p-4 flex gap-2 mt-auto shrink-0 z-20">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 w-full border-t border-white/5 bg-black/80 backdrop-blur-xl p-4 pb-safe flex gap-2 z-50">
          <Button variant="secondary" className="flex-1 px-1 text-xs sm:text-sm" onClick={handleSimplifyDebts}>
            <Calculator className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
            Simplify

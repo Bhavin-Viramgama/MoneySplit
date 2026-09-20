@@ -247,3 +247,11 @@ body {
 .ms-stagger > :nth-child(4) { animation-delay: 180ms; }
 .ms-stagger > :nth-child(5) { animation-delay: 240ms; }
 .ms-stagger > :nth-child(6) { animation-delay: 300ms; }
+
+/* Safe area inset support */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}

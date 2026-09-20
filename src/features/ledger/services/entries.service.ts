@@ -135,7 +135,7 @@ export const entriesService = {
         {
           event: '*',
           schema: 'public',
-          table: 'entries',
+          table: 'finance_entries',
           filter: `friendship_id=eq.${friendshipId}`
         },
         (payload) => {

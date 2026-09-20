@@ -26,10 +26,16 @@ export function ProfilePage() {
     e.preventDefault();
     if (!user || !editUsername.trim()) return;
 
+    const usernameRegex = /^[a-z0-9_]{3,24}$/i;
+    if (!usernameRegex.test(editUsername.trim())) {
+      alert("Username must be between 3 and 24 characters, and can only contain letters, numbers, and underscores.");
+      return;
+    }
+
     try {
       setSavingProfile(true);
       await updateProfile(user.id, {
-        username: editUsername.trim().toLowerCase(),
+        username: editUsername.trim(),
       });
       alert('Profile updated successfully!');
     } catch (err: any) {

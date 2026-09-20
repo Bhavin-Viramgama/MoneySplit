@@ -177,14 +177,24 @@ export async function fetchProfile(userId: string) {
  * Update the public profile for a user.
  */
 export async function updateProfile(userId: string, updates: { username?: string }) {
+  const payload: any = { ...updates };
+  if (updates.username) {
+    const trimmed = updates.username.trim();
+    payload.username = trimmed;
+    payload.username_normalized = trimmed.toLowerCase();
+  }
+
   const { data, error } = await supabase
     .from('profiles')
-    .update(updates)
+    .update(payload)
     .eq('id', userId)
     .select()
     .single();
 
   if (error) {
+    if (error.code === '23505') {
+      throw new Error('This username is already taken. Please choose another one.');
+    }
     throw new Error(error.message);
   }
 
